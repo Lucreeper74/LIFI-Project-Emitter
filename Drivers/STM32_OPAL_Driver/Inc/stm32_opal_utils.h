@@ -2,6 +2,7 @@
 #define __STM32_OPAL_UTILS_H__
 
 #include <stdint.h>
+#include <stddef.h>
 
 /*
 *   PAM4 voltage levels definition (For 12 bits DAC)
