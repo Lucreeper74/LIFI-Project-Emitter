@@ -25,9 +25,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdint.h>
-#include <stdio.h>
-#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +47,16 @@
 /* USER CODE BEGIN PV */
 int index_dac = 0;
 //uint16_t dac_values[TAB_SIZE] = {0x400, 0x800, 0xC00, 0xFFF};
-uint16_t dac_values[TAB_SIZE] = {0x400, 0x500, 0x600, 0x800};
+//uint16_t dac_values[TAB_SIZE] = {0x400, 0x500, 0x600, 0x800};
+
+  OPAL_Frame frameTest = {
+        .Preamble     = OPAL_FRAME_PREAMBLE,
+        .StartFrame   = OPAL_FRAME_START_BYTE,
+        .DataType     = TYPE_BIN,
+        .Data         = {0xFF, 0x65, 0xCC, 0x89},
+        .FrameCheckSQ = 1
+  };
+  OPAL_PAM4_symbol symbols[sizeof(OPAL_Frame) * OPAL_SYMBOLS_PER_BYTE];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,8 +87,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  index_dac = 0;
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -100,6 +104,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+
+  OPAL_Emitter_Encode(&frameTest, symbols);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -108,7 +114,6 @@ int main(void)
   {
     //bool bp_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
     //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? SET : RESET);
-    
     
     setADCNextValue();
     //printf("DAC Value : %i \n\r", dac_values[index_dac]);
@@ -169,7 +174,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void setADCNextValue() {
-  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_values[index_dac]);
+  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, OPAL_symbol_to_voltage(symbols[index_dac]));
 }
 
 PUTCHAR_PROTOTYPE

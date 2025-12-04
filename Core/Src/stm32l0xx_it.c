@@ -147,7 +147,7 @@ void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
   int new_index = index_dac + 1;
-  index_dac = new_index >= TAB_SIZE ? 0 : new_index;
+  index_dac = new_index >= (sizeof(OPAL_Frame) * OPAL_SYMBOLS_PER_BYTE) ? 0 : new_index;
 
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);

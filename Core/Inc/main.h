@@ -31,7 +31,12 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
 
+#include "stm32_opal_frame.h"
+#include "stm32_opal_emitter.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -73,7 +78,6 @@ void setADCNextValue();
 #define TCK_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-#define TAB_SIZE 4
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
