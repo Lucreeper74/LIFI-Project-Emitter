@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.s text eol=lf
+*.ld text eol=lf
+*.ioc text eol=lf
+*.txt text eol=lf
+Makefile text eol=lf
