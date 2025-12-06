@@ -19,6 +19,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stm32_opal_emitter.h"
+#include "stm32l0xx_hal_tim.h"
 #include "stm32l0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -51,7 +53,6 @@
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern int index_dac;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -146,9 +147,7 @@ void SysTick_Handler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-  int new_index = index_dac + 1;
-  index_dac = new_index >= (sizeof(OPAL_Frame) * OPAL_SYMBOLS_PER_BYTE) ? 0 : new_index;
-
+  HAL_TIM_PeriodElapsedCallback(&htim2);
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
   /* USER CODE BEGIN TIM2_IRQn 1 */

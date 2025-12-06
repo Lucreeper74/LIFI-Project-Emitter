@@ -19,6 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dac.h"
+#include "stm32_opal_emitter.h"
+#include "stm32_opal_frame.h"
+#include "stm32_opal_utils.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -45,18 +48,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int index_dac = 0;
-//uint16_t dac_values[TAB_SIZE] = {0x400, 0x800, 0xC00, 0xFFF};
-//uint16_t dac_values[TAB_SIZE] = {0x400, 0x500, 0x600, 0x800};
-
-  OPAL_Frame frameTest = {
-        .Preamble     = OPAL_FRAME_PREAMBLE,
-        .StartFrame   = OPAL_FRAME_START_BYTE,
-        .DataType     = TYPE_BIN,
-        .Data         = {0xFF, 0x65, 0xCC, 0x89},
-        .FrameCheckSQ = 1
-  };
-  OPAL_PAM4_symbol symbols[sizeof(OPAL_Frame) * OPAL_SYMBOLS_PER_BYTE];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,17 +96,32 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 
-  OPAL_Emitter_Encode(&frameTest, symbols);
+  OPAL_Frame frameTest = {
+        .Preamble     = OPAL_FRAME_PREAMBLE,
+        .StartFrame   = OPAL_FRAME_START_BYTE,
+        .DataType     = TYPE_BIN,
+        .Data         = {0xFF, 0x65, 0xCC, 0x89},
+        .FrameCheckSQ = 1
+  };
+
+  OPAL_Emitter_Prepare_Frame(&frameTest);
+
+  bool prev_bp_state = false;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    //bool bp_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
-    //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? SET : RESET);
-    
-    setADCNextValue();
+    bool bp_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? SET : RESET);
+
+    if (prev_bp_state != bp_state) {
+      if (bp_state) {
+        OPAL_Emitter_Send_Frame(&htim2);
+      }
+      prev_bp_state = bp_state;
+    }
     //printf("DAC Value : %i \n\r", dac_values[index_dac]);
 
     /* USER CODE END WHILE */
@@ -173,14 +179,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void setADCNextValue() {
-  HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, OPAL_symbol_to_voltage(symbols[index_dac]));
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
+    if (htim->Instance == TIM2) {
+      OPAL_TIM_PeriodElapsedCallback(htim, &hdac);
+    }
 }
 
 PUTCHAR_PROTOTYPE
 {
-  /* Place your implementation of fputc here */
-  /* e.g. write a character to the USART1 and Loop until the end of transmission */
+  // Used for Printf
   HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
 
   return ch;
