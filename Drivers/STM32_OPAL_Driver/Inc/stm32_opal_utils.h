@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
+#include <stm32l0xx_hal.h>
 
 /*
 *   PAM4 voltage levels definition (For 12 bits DAC)
@@ -32,7 +34,8 @@ typedef enum {
     OPAL_ERROR_MEMORY,
     OPAL_ERROR_NULL_PTR,
     OPAL_ERROR_INVALID_FRAME,
-    OPAL_ERROR_UNKNOWN_DATA_TYPE
+    OPAL_ERROR_UNKNOWN_DATA_TYPE,
+    OPAL_DAC_ERROR
 } OPAL_Status;
 
 static inline uint8_t OPAL_pam4_to_bits(OPAL_PAM4_symbol symbol) {
