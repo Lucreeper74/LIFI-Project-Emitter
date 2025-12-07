@@ -3,6 +3,7 @@
 
 #include "stm32_opal_utils.h"
 #include "stm32_opal_frame.h"
+#include "stm32l0xx_hal_tim.h"
 
 /*
 *   Encoding Frame (binary) to PAM4 Symbols
@@ -12,7 +13,7 @@ OPAL_Status OPAL_Emitter_Encode(const OPAL_Frame* frame, OPAL_PAM4_symbol* frame
 /*
 *   Preparation of the frame transmission (Reset buffers and such)
 */
-OPAL_Status OPAL_Emitter_Prepare_Frame(const OPAL_Frame *frame);
+OPAL_Status OPAL_Emitter_Prepare_Frame(OPAL_Frame *frame);
 
 /*
 *   Send the frame by enabling the timer

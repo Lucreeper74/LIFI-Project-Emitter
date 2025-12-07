@@ -22,6 +22,7 @@
 #include "stm32_opal_emitter.h"
 #include "stm32_opal_frame.h"
 #include "stm32_opal_utils.h"
+#include "stm32l0xx_hal_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -99,9 +100,8 @@ int main(void)
   OPAL_Frame frameTest = {
         .Preamble     = OPAL_FRAME_PREAMBLE,
         .StartFrame   = OPAL_FRAME_START_BYTE,
-        .DataType     = TYPE_BIN,
-        .Data         = {0xFF, 0x65, 0xCC, 0x89},
-        .FrameCheckSQ = 1
+        .DataType     = 0x00,
+        .Data         = {0x00, 0x00, 0x00, 0x00}
   };
 
   OPAL_Emitter_Prepare_Frame(&frameTest);
@@ -114,7 +114,7 @@ int main(void)
   while (1)
   {
     bool bp_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? SET : RESET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
 
     if (prev_bp_state != bp_state) {
       if (bp_state) {

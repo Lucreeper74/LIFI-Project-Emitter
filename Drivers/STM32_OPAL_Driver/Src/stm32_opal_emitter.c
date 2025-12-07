@@ -1,28 +1,27 @@
 #include "stm32_opal_emitter.h"
-#include "stm32_opal_utils.h"
-#include "stm32l0xx_hal_tim.h"
 
 static volatile uint8_t symbol_index = 0; // Volatile because can be modified by an ITR
 static volatile bool tx_active = false;   // Default state inactive
-static OPAL_PAM4_symbol frame_buffer[sizeof(OPAL_PAM4_symbol) * OPAL_SYMBOLS_PER_BYTE];
+static OPAL_PAM4_symbol frame_buffer[sizeof(OPAL_Frame) * OPAL_SYMBOLS_PER_BYTE];
 
 OPAL_Status OPAL_Emitter_Encode(const OPAL_Frame* frame, OPAL_PAM4_symbol* frame_symbols) {
     if (frame == NULL)
         return OPAL_ERROR_NULL_PTR;
 
-    const uint8_t* frameBytes = (const uint8_t*) frame;
-    size_t frameSize = sizeof(OPAL_Frame);
+    const uint8_t* frame_bytes = (const uint8_t*) frame;
     size_t symbol_index = 0;
 
-    for (size_t i = 0; i < frameSize; i++) {
-        OPAL_byte_to_pam4(frameBytes[i], &frame_symbols[symbol_index]);
+    for (size_t i = 0; i < sizeof(OPAL_Frame); i++) {
+        OPAL_byte_to_pam4(frame_bytes[i], &frame_symbols[symbol_index]);
         symbol_index += OPAL_SYMBOLS_PER_BYTE;
     }
     
     return OPAL_SUCCESS;
 }
 
-OPAL_Status OPAL_Emitter_Prepare_Frame(const OPAL_Frame *frame) {
+OPAL_Status OPAL_Emitter_Prepare_Frame(OPAL_Frame *frame) {
+    frame->crc16 = OPAL_Compute_CRC16(frame);
+
     OPAL_Status status = OPAL_Emitter_Encode(frame, frame_buffer);
 
     if (status == OPAL_ERROR_INVALID_FRAME)

@@ -16,6 +16,9 @@
 
 #define OPAL_SYMBOLS_PER_BYTE 4 // Each symbol is 2 bits so 4 symbols/byte
 
+#define OPAL_CRC16_DEFAULT   0xFFFF // Default value of the CRC16
+#define OPAL_CRC16_GENERATOR 0x8005 // The polynomial generator used for CRC16 
+
 /*
 *   PAM4 Binary levels definition
 */
@@ -69,5 +72,10 @@ static inline uint16_t OPAL_symbol_to_voltage(OPAL_PAM4_symbol symbol) {
         default: return OPAL_PAM4_LEVEL_0;
     }
 }
+
+/*
+*   Get the index of the Most Significant Bit in a 16 bits variable
+*/
+size_t OPAL_msb_index(uint16_t data);
 
 #endif // __STM32_OPAL_UTILS_H__
