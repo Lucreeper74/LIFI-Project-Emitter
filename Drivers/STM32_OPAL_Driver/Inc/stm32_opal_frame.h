@@ -2,22 +2,24 @@
 #define __STM32_OPAL_FRAME_H__
 
 #include "stm32_opal_utils.h"
+#include <string.h>
 
 // Definition of known frame Sequences
 #define OPAL_FRAME_PREAMBLE     0xCCCC // => 11 00 11 00 11 00 11 00 - 2 Bytes
 #define OPAL_FRAME_START_BYTE   0x1B   // => 00 01 10 11 - 1 Byte
 
-#define OPAL_FRAME_PAYLOAD_SIZE 4  // In bytes
+#define OPAL_FRAME_PAYLOAD_SIZE 4  // In Bytes
+#define OPAL_FRAME_SIZE (2 + 1 + 1 + OPAL_FRAME_PAYLOAD_SIZE + 2) // In Bytes
 
 /*
-*   Represent the frame structure (Packed to ensure contiguous memory layout)
+*   Represent the frame structure
 */
-typedef struct __attribute__((packed)) {
+typedef struct {
     uint16_t Preamble;     /* !< Init the frame (Known sequence) */
     uint8_t  StartFrame;   /* !< Define the start of the frame (Known sequence) */ 
     uint8_t  DataType;     /* !< Define the type of the data transmitted */
     uint8_t  Data[OPAL_FRAME_PAYLOAD_SIZE]; /* !< Define the data transmitted */
-    uint16_t crc16;        /* !< Used to verify the frame integrity */
+    uint16_t CRC16;        /* !< Used to verify the frame integrity */
 } OPAL_Frame;
 
 /*
@@ -41,12 +43,12 @@ typedef enum {
 } OPAL_DataType;
 
 /*
-*   Compute the CRC16 for a specific frame
+*   Compute the CRC16 for an OPAL_Frame
 */
 uint16_t OPAL_Compute_CRC16(const OPAL_Frame* frame);
 
 /*
-*   Conversion between OPAL_Frame struct to bytes array (handle little-endians)
+*   Conversion between OPAL_Frame struct to a bytes array (in Big-endians)
 */
 void OPAL_Frame_Byte_Conversion(const OPAL_Frame* frame, uint8_t* frame_bytes);
 

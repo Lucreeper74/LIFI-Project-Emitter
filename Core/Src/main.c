@@ -104,7 +104,7 @@ int main(void)
         .Data         = {0x00, 0x00, 0x00, 0x00}
   };
 
-  OPAL_Emitter_Prepare_Frame(&frameTest);
+  OPAL_Emitter_Encode(&frameTest);
 
   bool prev_bp_state = false;
   /* USER CODE END 2 */

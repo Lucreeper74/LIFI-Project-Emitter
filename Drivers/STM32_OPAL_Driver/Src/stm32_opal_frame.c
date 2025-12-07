@@ -1,15 +1,14 @@
 #include "stm32_opal_frame.h"
-#include <stddef.h>
-#include <stdint.h>
 
 uint16_t OPAL_Compute_CRC16(const OPAL_Frame* frame) {
-    const uint8_t* frame_bytes = (const uint8_t*) frame;
-
     uint8_t gen_MSB_index = OPAL_msb_index(OPAL_CRC16_GENERATOR);
     uint16_t CRC16_result = OPAL_CRC16_DEFAULT;
 
-    for (size_t i = 0; i < offsetof(OPAL_Frame, crc16); i++) { // Parse each bytes in frame (except CRC16 field obviously)
-        uint8_t byte = frame_bytes[i];
+    uint8_t data[OPAL_FRAME_SIZE] = {};
+    OPAL_Frame_Byte_Conversion(frame, data);
+
+    for (size_t i = 0; i < OPAL_FRAME_SIZE; i++) { // Parse each bytes in frame (except CRC16 field obviously)
+        uint8_t byte = data[i];
 
         CRC16_result ^= (byte << (gen_MSB_index-7)); // Align data byte (x0 to x7) with GEN MSB
         // XOR operation used here to avoid erasing data during each bytes of the frame
@@ -31,9 +30,32 @@ uint16_t OPAL_Compute_CRC16(const OPAL_Frame* frame) {
 }
 
 void OPAL_Frame_Byte_Conversion(const OPAL_Frame* frame, uint8_t* frame_bytes) {
-    uint8_t* frame_bytes_buffer = (const uint8_t*) frame;
-    
-    for (size_t i = 0; i < sizeof(OPAL_Frame); i++) {
+    size_t offset = 0;
 
-    }
+    /*
+    *   Little Endian (Actual memory organization) = LSB First
+    *   Example: 0x3412
+    *   Big Endian (Normal representation of binary) = MSB First
+    *   Example: 0x1234
+    *
+    *   Manual serialization to prevent struct padding
+    */
+
+    // Preamble
+    frame_bytes[offset++] = (frame->Preamble >> 8) & 0xFF;  // MSB first
+    frame_bytes[offset++] = frame->Preamble;                // LSB last
+
+    // Start of Frame
+    frame_bytes[offset++] = frame->StartFrame;
+
+    // DataType
+    frame_bytes[offset++] = frame->DataType;
+
+    // Data Payload
+    memcpy(&frame_bytes[offset], frame->Data, OPAL_FRAME_PAYLOAD_SIZE);
+    offset += OPAL_FRAME_PAYLOAD_SIZE;
+
+    // CRC16
+    frame_bytes[offset++] = (frame->CRC16 >> 8) & 0xFF; // MSB first
+    frame_bytes[offset++] = frame->CRC16;               // LSB last
 }
