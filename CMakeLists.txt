@@ -60,6 +60,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add project symbols (macros)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
+
+    STM32L0xx
 )
 
 # Remove wrong libob.a library dependency when using cpp files
