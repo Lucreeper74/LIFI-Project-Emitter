@@ -4,10 +4,12 @@ uint16_t OPAL_Compute_CRC16(const OPAL_Frame* frame) {
     uint8_t gen_MSB_index = OPAL_msb_index(OPAL_CRC16_GENERATOR);
     uint16_t CRC16_result = OPAL_CRC16_DEFAULT;
 
-    uint8_t data[OPAL_FRAME_SIZE] = {};
+    size_t data_length = OPAL_FRAME_SIZE-2;
+
+    uint8_t data[data_length] = {};
     OPAL_Frame_Byte_Conversion(frame, data);
 
-    for (size_t i = 0; i < OPAL_FRAME_SIZE; i++) { // Parse each bytes in frame (except CRC16 field obviously)
+    for (size_t i = 0; i < data_length; i++) { // Parse each bytes in frame (except CRC16 field obviously)
         uint8_t byte = data[i];
 
         CRC16_result ^= (byte << (gen_MSB_index-7)); // Align data byte (x0 to x7) with GEN MSB
