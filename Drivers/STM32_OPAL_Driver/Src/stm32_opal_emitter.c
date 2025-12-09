@@ -49,6 +49,7 @@ void OPAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim, DAC_HandleTypeDef* 
         } else {
             tx_active = false; // End of transmission
             HAL_TIM_Base_Stop_IT(htim);
+            OPAL_Emitter_Send_Symbol(hdac, 0x00); // Reset DAC value
         }
     }
 }
