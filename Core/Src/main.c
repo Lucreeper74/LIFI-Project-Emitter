@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dac.h"
+#include "dma.h"
+#include "stm32l0xx_hal_dac.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -86,12 +88,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_DAC_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim2);
-  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 
   OPAL_Frame frameTest = {
         .Preamble     = OPAL_FRAME_PREAMBLE,
@@ -114,7 +115,7 @@ int main(void)
 
     if (prev_bp_state != bp_state) {
       if (bp_state) {
-        OPAL_Emitter_Send_Frame(&htim2);
+        OPAL_Emitter_Send_Frame(&htim2, &hdac);
       }
       prev_bp_state = bp_state;
     }
@@ -175,9 +176,9 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
-    if (htim->Instance == TIM2) {
-      OPAL_TIM_PeriodElapsedCallback(htim, &hdac);
+void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac) {
+    if (hdac->Instance == DAC1) {
+      OPAL_Transmission_Finished_Callback(&htim2, hdac);
     }
 }
 
