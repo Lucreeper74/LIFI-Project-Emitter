@@ -19,10 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dac.h"
-#include "stm32_opal_emitter.h"
-#include "stm32_opal_frame.h"
-#include "stm32_opal_utils.h"
-#include "stm32l0xx_hal_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
