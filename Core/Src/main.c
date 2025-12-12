@@ -20,8 +20,6 @@
 #include "main.h"
 #include "dac.h"
 #include "dma.h"
-#include "stm32_opal_emitter.h"
-#include "stm32l0xx_hal_dac.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
