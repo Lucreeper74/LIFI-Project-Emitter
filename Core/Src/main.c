@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dac.h"
 #include "dma.h"
+#include "stm32_opal_emitter.h"
 #include "stm32l0xx_hal_dac.h"
 #include "tim.h"
 #include "usart.h"
@@ -101,7 +102,9 @@ int main(void)
         .Data         = {0x00, 0x00, 0x00, 0x00}
   };
 
-  OPAL_Emitter_Encode(&frameTest);
+  OPAL_Emitter_Init(&hdac, &htim2);
+
+  OPAL_Emitter_Encode(&htx, &frameTest);
 
   bool prev_bp_state = false;
   /* USER CODE END 2 */
@@ -110,12 +113,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    bool bp_state = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+    bool bp_state = !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
 
     if (prev_bp_state != bp_state) {
       if (bp_state) {
-        OPAL_Emitter_Send_Frame(&htim2, &hdac);
+        OPAL_Emitter_Send_Frame(&htx);
+        
       }
       prev_bp_state = bp_state;
     }
@@ -178,7 +182,7 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac) {
     if (hdac->Instance == DAC1) {
-      OPAL_Transmission_Finished_Callback(&htim2, hdac);
+      OPAL_Emitter_Finished_Callback(&htx);
     }
 }
 
