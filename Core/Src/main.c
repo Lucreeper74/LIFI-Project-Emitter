@@ -93,11 +93,13 @@ int main(void)
   MX_DAC_Init();
   /* USER CODE BEGIN 2 */
 
+  OPAL_DataType date_type = TYPE_INT;
+
   OPAL_Frame frameTest = {
         .Preamble     = OPAL_FRAME_PREAMBLE,
         .StartFrame   = OPAL_FRAME_START_BYTE,
-        .DataType     = 0x00,
-        .Data         = {0x00, 0x00, 0x00, 0x00}
+        .DataType     = date_type,
+        .Data         = {0xAC, 0xF7, 0x89, 0x7B}
   };
 
   OPAL_Emitter_Init(&hdac, &htim2);
@@ -161,8 +163,8 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
