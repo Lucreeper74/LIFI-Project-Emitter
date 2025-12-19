@@ -3,6 +3,8 @@
 [![License: Apache2.0](https://img.shields.io/badge/License-Apache2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maintainer](https://img.shields.io/badge/Maintainer-Luc_Creeper74-orange)](https://github.com/Lucreeper74)
 
+Copyright (c) 2025 Luc_Creeper74 - LIFI-Project-Emitter is under the Apache 2.0 License.
+
 ## Installation
 
 The project can be installed and compiled with or without `CubeMX` on `STM32CubeIDE` or any other thirdparty IDE, especially `CLion` or `Visual Studio Code` (IDE used for the project creation) that have a dedicated plugin for **STM32** projects and `CMake` integration.
