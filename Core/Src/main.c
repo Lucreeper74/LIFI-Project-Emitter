@@ -21,7 +21,9 @@
 #include "dac.h"
 #include "dma.h"
 #include "stm32_opal_emitter.h"
+#include "stm32_opal_frame.h"
 #include "stm32_opal_uart.h"
+#include "labview_test.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -95,18 +97,14 @@ int main(void)
   MX_DAC_Init();
   /* USER CODE BEGIN 2 */
 
-  OPAL_DataType date_type = TYPE_INT;
-
-  OPAL_Frame frameTest = {
+  OPAL_Frame bp_frame = {
         .Preamble     = OPAL_FRAME_PREAMBLE,
         .StartFrame   = OPAL_FRAME_START_BYTE,
-        .DataType     = date_type,
+        .DataType     = TYPE_INT,
         .Data         = {0xAC, 0xF7, 0x89, 0x7B}
   };
 
   OPAL_Emitter_Init(&hdac, &htim2);
-  OPAL_Emitter_Encode(&htx, &frameTest);
-
   OPAL_UART_RX_Init(&huart2);
 
   bool prev_bp_state = false;
@@ -116,39 +114,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    
+    if (LabVIEW_Task(&huart_rx, &htx) != LABVIEW_NONE) {
+        break; // Exit main loop if a LabVIEW test is active
+    };
+
+    // Handle Button Press to Send Frame
     bool bp_state = !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, bp_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
 
     if (prev_bp_state != bp_state) {
       if (bp_state) {
+        OPAL_Emitter_Encode(&htx, &bp_frame);
         OPAL_Emitter_Send_Frame(&htx);
-        
       }
       prev_bp_state = bp_state;
-    }
-
-    if (huart_rx.cmd_ready) {
-        OPAL_UART_Command cmd = OPAL_UART_RX_ParseCmd(&huart_rx);
-        switch (cmd.commandType) {
-            case OPAL_TEST1_COMMAND:
-                // Handle TEST1 command
-                printf("Received TEST1_COMMAND\r\n");
-                break;
-            case OPAL_TEST2_COMMAND:
-                // Handle TEST2 command
-                printf("Received TEST2_COMMAND\r\n");
-                break;
-            case OPAL_TEST_SETCOMMAND:
-                // Handle SETCOMMAND command
-                printf("Received SETCOMMAND with param: %i\r\n", atoi((const char*) cmd.param));
-                break;
-
-            case OPAL_UNKNOWN_COMMAND:
-                printf("Received UNKNOWN_COMMAND\r\n");
-                break;
-            default:
-                break;
-        }
     }
 
     /* USER CODE END WHILE */
