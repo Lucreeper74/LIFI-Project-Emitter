@@ -48,6 +48,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_utils.c
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_frame.c
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_emitter.c
+    Drivers/STM32_OPAL_Driver/Src/stm32_opal_uart.c
 )
 
 # Add include paths

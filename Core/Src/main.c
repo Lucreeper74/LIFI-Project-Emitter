@@ -20,6 +20,8 @@
 #include "main.h"
 #include "dac.h"
 #include "dma.h"
+#include "stm32_opal_emitter.h"
+#include "stm32_opal_uart.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -103,8 +105,9 @@ int main(void)
   };
 
   OPAL_Emitter_Init(&hdac, &htim2);
-
   OPAL_Emitter_Encode(&htx, &frameTest);
+
+  OPAL_UART_RX_Init(&huart2);
 
   bool prev_bp_state = false;
   /* USER CODE END 2 */
@@ -123,7 +126,30 @@ int main(void)
       }
       prev_bp_state = bp_state;
     }
-    //printf("DAC Value : %i \n\r", dac_values[index_dac]);
+
+    if (huart_rx.cmd_ready) {
+        OPAL_UART_Command cmd = OPAL_UART_RX_ParseCmd(&huart_rx);
+        switch (cmd.commandType) {
+            case OPAL_TEST1_COMMAND:
+                // Handle TEST1 command
+                printf("Received TEST1_COMMAND\r\n");
+                break;
+            case OPAL_TEST2_COMMAND:
+                // Handle TEST2 command
+                printf("Received TEST2_COMMAND\r\n");
+                break;
+            case OPAL_TEST_SETCOMMAND:
+                // Handle SETCOMMAND command
+                printf("Received SETCOMMAND with param: %i\r\n", atoi((const char*) cmd.param));
+                break;
+
+            case OPAL_UNKNOWN_COMMAND:
+                printf("Received UNKNOWN_COMMAND\r\n");
+                break;
+            default:
+                break;
+        }
+    }
 
     /* USER CODE END WHILE */
 
@@ -181,9 +207,11 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac) {
-    if (hdac->Instance == DAC1) {
-      OPAL_Emitter_Finished_Callback(&htx);
-    }
+    OPAL_Emitter_Finished_Callback(hdac, &htx);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
+    OPAL_UART_RX_Callback(huart);
 }
 
 PUTCHAR_PROTOTYPE
