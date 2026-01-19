@@ -45,17 +45,26 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    
+    # STM32 OPAL Driver sources
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_utils.c
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_frame.c
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_emitter.c
-    Drivers/STM32_OPAL_Driver/Src/stm32_opal_uart.c
+    Drivers/STM32_OPAL_Driver/Src/stm32_opal_uart_tx_cmd.c
+
+    # STM32 UART Driver sources
+    Drivers/STM32_UART_Driver/Src/stm32_uart_rx.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
 
+    # STM32 OPAL Driver includes
     Drivers/STM32_OPAL_Driver/Inc
+
+    # STM32 UART Driver includes
+    Drivers/STM32_UART_Driver/Inc
 )
 
 # Add project symbols (macros)

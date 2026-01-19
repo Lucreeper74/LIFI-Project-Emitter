@@ -1,3 +1,6 @@
 [submodule "Drivers/STM32_OPAL_Driver"]
 	path = Drivers/STM32_OPAL_Driver
 	url = https://github.com/Lucreeper74/STM32_OPAL_Driver
+[submodule "Drivers/STM32_UART_Driver"]
+	path = Drivers/STM32_UART_Driver
+	url = https://github.com/Lucreeper74/STM32_UART_Driver

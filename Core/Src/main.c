@@ -22,8 +22,8 @@
 #include "dma.h"
 #include "stm32_opal_emitter.h"
 #include "stm32_opal_frame.h"
-#include "stm32_opal_uart.h"
-#include "labview_test.h"
+#include "stm32_opal_uart_tx_cmd.h"
+#include "stm32_uart_rx.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -105,7 +105,7 @@ int main(void)
   };
 
   OPAL_Emitter_Init(&hdac, &htim2);
-  OPAL_UART_RX_Init(&huart2);
+  UART_RX_Init(&huart2);
 
   bool prev_bp_state = false;
   /* USER CODE END 2 */
@@ -117,9 +117,9 @@ int main(void)
 
     // Listen UART Commands and process them
     if (huart_rx.cmd_ready) {
-        OPAL_UART_Command cmd = OPAL_UART_RX_ParseCmd(&huart_rx);
+        OPAL_UART_Command cmd = UART_RX_ParseCmd(&huart_rx);
         printf(cmd.has_param ? "Received Command: %s, with param: %s\r\n" : "Received Command: %s\r\n", cmd.command, cmd.param);
-        LabVIEW_Process_Command(&cmd, &htx);
+        OPAL_TX_UART_processCommand(&cmd, &htx);
     }
 
     // Handle Button Press to Send Frame
@@ -195,7 +195,7 @@ void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef* hdac) {
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
-    OPAL_UART_RX_Callback(huart);
+    UART_RX_Callback(huart);
 }
 
 PUTCHAR_PROTOTYPE
