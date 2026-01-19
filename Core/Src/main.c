@@ -114,10 +114,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    
-    if (LabVIEW_Task(&huart_rx, &htx) != LABVIEW_NONE) {
-        break; // Exit main loop if a LabVIEW test is active
-    };
+
+    // Listen UART Commands and process them
+    if (huart_rx.cmd_ready) {
+        OPAL_UART_Command cmd = OPAL_UART_RX_ParseCmd(&huart_rx);
+        printf(cmd.has_param ? "Received Command: %s, with param: %s\r\n" : "Received Command: %s\r\n", cmd.command, cmd.param);
+        LabVIEW_Process_Command(&cmd, &htx);
+    }
 
     // Handle Button Press to Send Frame
     bool bp_state = !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
@@ -125,6 +128,7 @@ int main(void)
 
     if (prev_bp_state != bp_state) {
       if (bp_state) {
+        printf("Button Pressed - Sending Frame\r\n");
         OPAL_Emitter_Encode(&htx, &bp_frame);
         OPAL_Emitter_Send_Frame(&htx);
       }

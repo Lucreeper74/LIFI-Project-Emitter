@@ -30,55 +30,14 @@ typedef struct {
 *   Array to get the string representation of a command type
 */
 static const CommandType_Map cmdType_map[] = {
-    { START_TEST,           "START_TEST" },
-    { CONFIRM_NEXT_STEP,    "CONF_NEXT_STEP" },
-    { ABORT_CURRENT_TEST,   "ABORT_CURR_TEST" },
+    { START_TEST,           "LV_START_TST" },
+    { CONFIRM_NEXT_STEP,    "LV_CONFIRM" },
+    { ABORT_CURRENT_TEST,   "LV_ABORT" },
 };
-
-/*
-*  Definition of LabVIEW Test ID enumeration
-*/
-typedef enum {
-    LABVIEW_NONE = 0x0,
-    LABVIEW_TEST_1,
-    LABVIEW_TEST_2,
-    LABVIEW_TEST_3,
-} LabVIEW_Test_ID;
-
-/*
-*   Definition of LabVIEW Test Status enumeration
-*/
-typedef enum {
-    LABVIEW_CONFIGURING = 0x0,
-    LABVIEW_WAITING,
-    LABVIEW_RUNNING,
-    LABVIEW_COMPLETED,
-} LabVIEW_Test_Status;
-
-/*
-*   Structure to hold LabVIEW test information
-*/
-typedef struct {
-    LabVIEW_Test_ID     test_id;     /* < Test ID */
-    LabVIEW_Test_Status test_status; /* < Test Status */
-} LabVIEW_Test_Handle;
-
-extern LabVIEW_Test_Handle h_labview; // Global LabVIEW test handle
-
-
-/*
-*   Main LabVIEW Task to be called in the main loop
-*/
-LabVIEW_Test_ID LabVIEW_Task(OPAL_UART_RX_Handle* huart_rx, OPAL_Emitter_Handle* htx);
 
 /*
 *  Process a LabVIEW command received via UART
 */
-void LabVIEW_Process_Command(const char *command_str, const char *param_str);
-
-/*
-*   Process LabVIEW tests
-*/
-void LabVIEW_Process_Test(OPAL_Emitter_Handle* htx);
+void LabVIEW_Process_Command(const OPAL_UART_Command *cmd, OPAL_Emitter_Handle* htx);
 
 #endif // __LABVIEW_TEST_H__
