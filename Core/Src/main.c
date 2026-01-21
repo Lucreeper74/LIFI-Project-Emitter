@@ -20,16 +20,16 @@
 #include "main.h"
 #include "dac.h"
 #include "dma.h"
-#include "stm32_opal_emitter.h"
-#include "stm32_opal_frame.h"
-#include "stm32_opal_uart_tx_cmd.h"
-#include "stm32_uart_rx.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32_opal_emitter.h"
+#include "stm32_opal_frame.h"
+#include "stm32_opal_uart_tx_cmd.h"
+#include "stm32_uart_rx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
