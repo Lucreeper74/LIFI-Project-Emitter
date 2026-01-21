@@ -128,7 +128,7 @@ int main(void)
 
     if (prev_bp_state != bp_state) {
       if (bp_state) {
-        printf("Button Pressed - Sending Frame\r\n");
+        printf("BP Pressed! Sending Frame...\r\n");
         OPAL_Emitter_Encode(&htx, &bp_frame);
         OPAL_Emitter_Send_Frame(&htx);
       }
