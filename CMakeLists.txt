@@ -51,7 +51,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_frame.c
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_emitter.c
     Drivers/STM32_OPAL_Driver/Src/stm32_opal_uart_tx_cmd.c
-    Drivers/STM32_OPAL_Driver/Src/stm32_opal_uart_rx_cmd.c
 
     # STM32 UART Driver sources
     Drivers/STM32_UART_Driver/Src/stm32_uart_rx.c
